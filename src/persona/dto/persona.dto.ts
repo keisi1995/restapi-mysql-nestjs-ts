@@ -23,21 +23,4 @@ export class CreatePersonaDTO {
 
 //Agregar todos los campos opcionales
 export class UpdatePersonaDTO extends PartialType(CreatePersonaDTO) {
-
-  @ApiProperty()
-  @IsString()
-  nombres: string;
-
-  @ApiProperty()
-  @IsString()
-  apellidos: string;
-
-  @ApiProperty({ enum: Gender })
-  @IsEnum(Gender)
-  genero: Gender;
-
-  @ApiProperty()
-  @IsString()
-  tipo_persona: string;
-
 }

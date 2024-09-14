@@ -10,7 +10,4 @@ export class CreateTipoPersonaDTO {
 
 //Agregar todos los campos opcionales
 export class UpdateTipoPersonaDTO extends PartialType(CreateTipoPersonaDTO) {
-  @ApiProperty()
-  @IsString()
-  descripcion: string;
 }

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like, Repository, UpdateResult, DeleteResult } from 'typeorm';
 import { paginate, Pagination, IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 import { Persona } from './entities/persona.entity';
@@ -18,10 +18,6 @@ export class PersonaService {
     private readonly tipoPersonaRepository: Repository<TipoPersona>,
   ) { }
 
-  async paginate(options: IPaginationOptions): Promise<Pagination<Persona>> {
-    return paginate<Persona>(this.personaRepository, options);
-  }
-
   async filter(nombres: string, genero: Gender): Promise<Persona[]> {
     return this.personaRepository.find({
       where: {
@@ -32,13 +28,15 @@ export class PersonaService {
     });
   }
 
-  // findAll() {
-  //   return this.personaRepository.find({
-  //     relations: ['originPlanet', 'transformations'],
-  //   });
-  // }
+  async paginate(options: IPaginationOptions): Promise<Pagination<Persona>> {
+    return paginate<Persona>(this.personaRepository, options);
+  }
 
-  async findOne(id: number) {
+  async findAll(): Promise<Persona[]> {
+    return this.personaRepository.find();
+  }
+
+  async findOne(id: number): Promise<Persona> {
     const persona = await this.personaRepository.findOne({
       where: { id },
       relations: ['tipo_persona'],
@@ -49,22 +47,22 @@ export class PersonaService {
     return persona;
   }
 
-  async create(createPersonaDto: CreatePersonaDTO) {
+  async create(createPersonaDto: CreatePersonaDTO): Promise<Persona> {
     const tipoPersona: TipoPersona = await this.tipoPersonaRepository.findOneBy({
       descripcion: createPersonaDto.tipo_persona,
     });
 
     if (!tipoPersona) { throw new BadRequestException('Tipo persona no encontrado'); }
 
-    const persona: Persona = this.personaRepository.create({
+    const personaCreate: Persona = this.personaRepository.create({
       ...createPersonaDto,
       tipo_persona: tipoPersona,
     });
 
-    return await this.personaRepository.save(persona);
+    return this.personaRepository.save(personaCreate);
   }
 
-  async update(id: number, updatePersonaDto: UpdatePersonaDTO) {
+  async update(id: number, updatePersonaDto: UpdatePersonaDTO): Promise<UpdateResult> {
     const persona = await this.personaRepository.findOneBy({ id });
 
     if (!persona) { throw new BadRequestException('Persona no encontrada'); }
@@ -75,18 +73,20 @@ export class PersonaService {
 
     if (!tipoPersona) { throw new BadRequestException('Tipo persona no encontrado'); }
 
-    const updatedPersona = {
+    const personaUpdate = {
       ...updatePersonaDto,
       tipo_persona: tipoPersona
     };
 
-    return await this.personaRepository.update(id, updatedPersona);
+    return this.personaRepository.update(id, personaUpdate);
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteResult> {
     const persona = await this.personaRepository.findOneBy({ id });
 
     if (!persona) { throw new BadRequestException('Persona no encontrada'); }
+
     return this.personaRepository.softDelete(id);
   }
+
 }
