@@ -2,40 +2,48 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { AuthModule } from './auth/auth.module';
-import { PersonaModule } from './persona/persona.module';
-import { TipoPersonaModule } from './tipo_persona/tipo_persona.module';
-import { UsuarioModule } from './usuario/usuario.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { PersonaModule } from './modules/persona/persona.module';
+import { TipoPersonaModule } from './modules/tipo_persona/tipo_persona.module';
+import { UserModule } from './modules/user/user.module';
+import { getDatabaseConfig } from './config/database.config';
+import { getAppConfig } from './config/app.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.MYSQL_HOST,
-      port: process.env.MYSQL_PORT,
-      username: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env'],
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'images'),
-      serveStaticOptions: {
-        maxAge: 30 * 24 * 60 * 60,
-        index: false,
-      },
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getDatabaseConfig,
     }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'images'),
+    //   serveStaticOptions: {
+    //     maxAge: 30 * 24 * 60 * 60,
+    //     index: false,
+    //   },
+    // }),
     AuthModule,
-    UsuarioModule,
+    UserModule,
     TipoPersonaModule,
     PersonaModule,
   ],
-  // controllers: [AppController],
-  // providers: [AppService],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: 'APP_CONFIG',
+      inject: [ConfigService],
+      useFactory: getAppConfig,
+    },
+  ],
+  exports: ['APP_CONFIG'],
 })
 export class AppModule { }
