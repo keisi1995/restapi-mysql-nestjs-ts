@@ -12,7 +12,7 @@ import { CreateProfileSwagger, UpdateProfileSwagger, FindAllProfileSwagger, Find
 @ApiBearerAuth('JWT-auth')
 
 @UseGuards(AuthGuard)
-@Controller('profile')
+@Controller('profiles')
 export class ProfileController {
 
 	constructor(private readonly profileService: ProfileService) { }

@@ -13,10 +13,10 @@ export class ProfileEntity implements IProfile {
 	@Column({ type: 'varchar', length: 20 })
 	status: string;
 
-	@CreateDateColumn({ name: 'created_at' })
+	@CreateDateColumn()
 	created_at: Date;
 
-	@UpdateDateColumn({ name: 'updated_at' })
+	@UpdateDateColumn()
 	updated_at: Date;
 
 	@OneToMany(() => UserEntity, (user) => user.profile)

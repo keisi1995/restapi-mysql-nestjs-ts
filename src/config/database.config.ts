@@ -1,13 +1,35 @@
+import { DataSourceOptions } from 'typeorm';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 
-export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOptions => ({
-	type: 'mysql',
-	host: configService.get<string>('MYSQL_HOST', 'localhost'),
-	port: configService.get<number>('MYSQL_PORT', 3306),
-	username: configService.get<string>('MYSQL_USER', 'root'),
-	password: configService.get<string>('MYSQL_PASSWORD', 'password'),
-	database: configService.get<string>('MYSQL_DATABASE', 'mydb'),
-	entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-	synchronize: configService.get<boolean>('DB_SYNC', true),
-});
+// export const getDataBaseConfig = (configService: ConfigService): TypeOrmModuleOptions => ({
+// 	type: 'mysql',
+// 	host: configService.get<string>('DB_HOST', 'localhost'),
+// 	port: configService.get<number>('DB_PORT', 3306),
+// 	username: configService.get<string>('DB_USERNAME', 'root'),
+// 	password: configService.get<string>('DB_PASSWORD', ''),
+// 	database: configService.get<string>('DB_NAME', 'demo'),
+// 	entities: [__dirname + '/../**/*.entity.{ts,js}'],
+// 	migrations: [__dirname + '/../migrations/*.{ts,js}'],
+// 	synchronize: false,
+// 	migrationsRun: true,
+// 	logging: true,
+// 	charset: 'utf8mb4_unicode_ci',
+// });
+
+export const getDataSourceConfig = (configService: ConfigService): DataSourceOptions => {
+	return {
+		type: 'mysql',
+		host: configService.get<string>('DB_HOST', 'localhost'),
+		port: configService.get<number>('DB_PORT', 3306),
+		username: configService.get<string>('DB_USERNAME', 'root'),
+		password: configService.get<string>('DB_PASSWORD', ''),
+		database: configService.get<string>('DB_NAME', 'demo'),
+		entities: ['dist/modules/**/entities/*.entity.js'],
+		migrations: [__dirname + '/../migrations/*.{ts,js}'],
+		synchronize: false,
+		migrationsRun: true,
+		logging: true,
+		charset: 'utf8mb4_unicode_ci',
+	};
+};

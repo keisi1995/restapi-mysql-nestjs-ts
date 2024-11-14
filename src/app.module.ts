@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AuthModule } from './modules/auth/auth.module';
@@ -11,7 +14,8 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { MerchantModule } from './modules/merchant/merchant.module';
 import { UserMerchantModule } from './modules/user_merchant/user_merchant.module';
 
-import { getDatabaseConfig } from './config/database.config';
+// getDataBaseConfig,
+import { getDataSourceConfig } from './config/database.config';
 import { getAppConfig } from './config/app.config';
 
 @Module({
@@ -23,8 +27,14 @@ import { getAppConfig } from './config/app.config';
 		TypeOrmModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
-			useFactory: getDatabaseConfig,
+			useFactory: getDataSourceConfig,
+			// useFactory: async (configService: ConfigService) => {
+			// 	return getDataSourceConfig(configService);
+			// },
 		}),
+		ThrottlerModule.forRoot([
+			{ ttl: 60, limit: 10 }, // 10 solicitudes por minuto
+		]),
 		ServeStaticModule.forRoot({
 			rootPath: join(__dirname, '..', 'images'),
 			serveStaticOptions: {
@@ -45,6 +55,10 @@ import { getAppConfig } from './config/app.config';
 			provide: 'APP_CONFIG',
 			inject: [ConfigService],
 			useFactory: getAppConfig,
+		},
+		{
+			provide: APP_GUARD,
+			useClass: ThrottlerGuard,
 		},
 	],
 	// exports: ['APP_CONFIG'],

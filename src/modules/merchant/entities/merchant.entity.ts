@@ -12,15 +12,15 @@ export class MerchantEntity implements IMerchant {
 	@Column({ type: 'varchar', length: 50 })
 	address: string;
 
-	@Column({ type: 'varchar', length: 20 })
+	@Column({ type: 'varchar', length: 20, nullable: true })
 	mcc: string;
 
 	@Column({ type: 'varchar', length: 11 })
 	ruc: string;
 
-	@CreateDateColumn({ name: 'created_at' })
+	@CreateDateColumn()
 	created_at: Date;
 
-	@UpdateDateColumn({ name: 'updated_at' })
+	@UpdateDateColumn()
 	updated_at: Date;
 }

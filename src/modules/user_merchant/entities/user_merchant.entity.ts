@@ -9,10 +9,10 @@ export class UserMerchantEntity implements IUserMerchant {
 	@PrimaryGeneratedColumn({ name: 'user_merchant_id' })
 	id: number;
 
-	@Column()
+	@Column({ name: 'user_id', type: 'int' })
 	user_id: number;
 
-	@Column()
+	@Column({ name: 'merchant_id', type: 'int' })
 	merchant_id: number;
 
 	@ManyToOne(() => UserEntity, (user) => user.id)
@@ -23,9 +23,9 @@ export class UserMerchantEntity implements IUserMerchant {
 	@JoinColumn({ name: 'merchant_id' })
 	merchant: MerchantEntity;
 
-	@CreateDateColumn({ name: 'created_at' })
+	@CreateDateColumn()
 	created_at: Date;
 
-	@UpdateDateColumn({ name: 'updated_at' })
+	@UpdateDateColumn()
 	updated_at: Date;
 }

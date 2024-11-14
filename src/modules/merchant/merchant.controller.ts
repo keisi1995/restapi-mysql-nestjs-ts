@@ -12,7 +12,7 @@ import { CreateMerchantSwagger, UpdateMerchantSwagger, FindAllMerchantSwagger, F
 @ApiBearerAuth('JWT-auth')
 
 @UseGuards(AuthGuard)
-@Controller('merchant')
+@Controller('merchants')
 export class MerchantController {
 
 	constructor(private readonly merchantService: MerchantService) { }

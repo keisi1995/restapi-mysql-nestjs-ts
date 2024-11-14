@@ -11,7 +11,7 @@ import { AuthGuard } from 'src/modules/auth/guard/auth.guard';
 @ApiBearerAuth('JWT-auth')
 
 @UseGuards(AuthGuard)
-@Controller('user-merchant')
+@Controller('users-merchants')
 export class UserMerchantController {
 
 	constructor(private readonly userMerchantService: UserMerchantService) { }

@@ -19,17 +19,17 @@ export class UserEntity implements IUser {
 	@Column({ type: 'varchar', length: 30, unique: true })
 	email: string;
 
+	@Exclude()
 	@Column({ type: 'varchar', length: 100 })
-	// @Exclude()
 	password: string;
 
-	@Column({ type: 'boolean' })
+	@Column({ type: 'boolean', default: true })
 	is_active: boolean;
 
-	@CreateDateColumn({ name: 'created_at' })
+	@CreateDateColumn()
 	created_at: Date;
 
-	@UpdateDateColumn({ name: 'updated_at' })
+	@UpdateDateColumn()
 	updated_at: Date;
 
 	@ManyToOne(() => ProfileEntity, (profile) => profile.users)
